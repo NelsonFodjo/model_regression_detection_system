@@ -23,7 +23,7 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 CREDENTIALS_FILE = "credentials.json"
 TOKEN_FILE = "token.json"
 PROCESSED_FILE = "processed_ids.json"
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "openai/gpt-oss-20b"
 
 
 def get_gmail_service():
@@ -116,7 +116,8 @@ Respond with only the single category word, nothing else."""
         model=GROQ_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
-        max_tokens=5,
+        max_tokens=20,
+        reasoning_effort="low",
     )
     return response.choices[0].message.content.strip()
 
