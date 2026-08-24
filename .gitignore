@@ -1,4 +1,6 @@
-
-# Git Auto Commit Generator learned data
-.git-auto-commit/
 .env
+token.json
+credentials.json
+processed_ids.json
+__pycache__/
+.git-auto-commit

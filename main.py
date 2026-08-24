@@ -10,6 +10,7 @@ import json
 import base64
 from pathlib import Path
 
+from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -121,6 +122,8 @@ Respond with only the single category word, nothing else."""
 
 
 def main():
+    load_dotenv()
+
     groq_api_key = os.environ.get("GROQ_API_KEY")
     if not groq_api_key:
         raise SystemExit("Set GROQ_API_KEY as an environment variable before running.")
