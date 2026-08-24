@@ -1,0 +1,159 @@
+"""
+Mail Summary — reads unread Gmail messages and generates a title + summary
+using Groq.
+ 
+Run: python main.py
+"""
+ 
+import os
+import json
+import base64
+from pathlib import Path
+ 
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+ 
+from groq import Groq
+ 
+# --- Config ---
+SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+CREDENTIALS_FILE = "credentials.json"
+TOKEN_FILE = "token.json"
+PROCESSED_FILE = "processed_ids.json"
+GROQ_MODEL = "llama-3.3-70b-versatile"
+ 
+ 
+def get_gmail_service():
+    """Authenticate with Gmail API, caching the token after first login."""
+    creds = None
+ 
+    if Path(TOKEN_FILE).exists():
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+ 
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
+            creds = flow.run_local_server(port=0)
+ 
+        with open(TOKEN_FILE, "w") as f:
+            f.write(creds.to_json())
+ 
+    return build("gmail", "v1", credentials=creds)
+ 
+ 
+def load_processed_ids():
+    if Path(PROCESSED_FILE).exists():
+        with open(PROCESSED_FILE) as f:
+            return set(json.load(f))
+    return set()
+ 
+ 
+def save_processed_ids(ids):
+    with open(PROCESSED_FILE, "w") as f:
+        json.dump(list(ids), f)
+ 
+ 
+def get_unread_messages(service, max_results=10):
+    """Fetch unread messages from the inbox."""
+    results = (
+        service.users()
+        .messages()
+        .list(userId="me", labelIds=["INBOX", "UNREAD"], maxResults=max_results)
+        .execute()
+    )
+    return results.get("messages", [])
+ 
+ 
+def extract_body(payload):
+    """Pull plain text body out of a Gmail message payload."""
+    if "parts" in payload:
+        for part in payload["parts"]:
+            if part.get("mimeType") == "text/plain" and "data" in part.get("body", {}):
+                return base64.urlsafe_b64decode(part["body"]["data"]).decode(
+                    "utf-8", errors="ignore"
+                )
+            # Recurse into nested multipart messages
+            if "parts" in part:
+                nested = extract_body(part)
+                if nested:
+                    return nested
+    elif "body" in payload and "data" in payload["body"]:
+        return base64.urlsafe_b64decode(payload["body"]["data"]).decode(
+            "utf-8", errors="ignore"
+        )
+    return ""
+ 
+ 
+def get_message_details(service, msg_id):
+    msg = service.users().messages().get(userId="me", id=msg_id, format="full").execute()
+ 
+    headers = msg["payload"]["headers"]
+    subject = next((h["value"] for h in headers if h["name"] == "Subject"), "(no subject)")
+    sender = next((h["value"] for h in headers if h["name"] == "From"), "(unknown sender)")
+    body = extract_body(msg["payload"])
+ 
+    return {"id": msg_id, "subject": subject, "sender": sender, "body": body}
+ 
+ 
+def summarize(groq_client, subject, sender, body):
+    """Ask Groq for a short title + summary of the email."""
+    prompt = f"""You are summarizing an email for a quick inbox digest.
+ 
+From: {sender}
+Subject: {subject}
+Body:
+{body[:3000]}
+ 
+Respond in exactly this format:
+Title: <a short, clear title, max 8 words>
+Summary: <2-3 sentence summary of what the email is about and any action needed>"""
+ 
+    response = groq_client.chat.completions.create(
+        model=GROQ_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3,
+        max_tokens=200,
+    )
+    return response.choices[0].message.content.strip()
+ 
+ 
+def main():
+    groq_api_key = os.environ.get("GROQ_API_KEY")
+    if not groq_api_key:
+        raise SystemExit("Set GROQ_API_KEY as an environment variable before running.")
+ 
+    groq_client = Groq(api_key=groq_api_key)
+    service = get_gmail_service()
+ 
+    processed_ids = load_processed_ids()
+    messages = get_unread_messages(service)
+ 
+    new_messages = [m for m in messages if m["id"] not in processed_ids]
+ 
+    if not new_messages:
+        print("No new unread mail.")
+        return
+ 
+    print(f"Found {len(new_messages)} new unread message(s).\n")
+ 
+    for m in new_messages:
+        details = get_message_details(service, m["id"])
+        result = summarize(groq_client, details["subject"], details["sender"], details["body"])
+ 
+        print("=" * 60)
+        print(f"From: {details['sender']}")
+        print(result)
+        print("=" * 60)
+        print()
+ 
+        processed_ids.add(m["id"])
+ 
+    save_processed_ids(processed_ids)
+ 
+ 
+if __name__ == "__main__":
+    main()
