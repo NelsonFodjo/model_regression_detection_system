@@ -32,7 +32,7 @@ def load_prompt(path):
 
 
 def classify_email(client: Groq, prompt_config: dict, sender: str, subject: str, body: str) -> dict:
-    """Classifies one email into category + summary."""
+    """The feature under test. Classifies one email into category + summary."""
     messages = [
         {"role": "system", "content": prompt_config["system_prompt"]},
         {"role": "user", "content": f"From: {sender}\nSubject: {subject}\nBody:\n{body[:3000]}"},
@@ -42,12 +42,18 @@ def classify_email(client: Groq, prompt_config: dict, sender: str, subject: str,
         model=MODEL,
         messages=messages,
         temperature=0,
-        max_tokens=250,
+        max_tokens=500,
         reasoning_effort="low",
         response_format={"type": "json_object"},
     )
 
-    return json.loads(response.choices[0].message.content.strip())
+    parsed = json.loads(response.choices[0].message.content.strip())
+    parsed["_usage"] = {
+        "prompt_tokens": response.usage.prompt_tokens,
+        "completion_tokens": response.usage.completion_tokens,
+        "total_tokens": response.usage.total_tokens,
+    }
+    return parsed
 
 
 def judge_summary(client: Groq, sender: str, subject: str, body: str, summary: str) -> dict:
@@ -58,9 +64,15 @@ def judge_summary(client: Groq, sender: str, subject: str, body: str, summary: s
         model=MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
-        max_tokens=200,
+        max_tokens=400,
         reasoning_effort="low",
         response_format={"type": "json_object"},
     )
 
-    return json.loads(response.choices[0].message.content.strip())
+    parsed = json.loads(response.choices[0].message.content.strip())
+    parsed["_usage"] = {
+        "prompt_tokens": response.usage.prompt_tokens,
+        "completion_tokens": response.usage.completion_tokens,
+        "total_tokens": response.usage.total_tokens,
+    }
+    return parsed

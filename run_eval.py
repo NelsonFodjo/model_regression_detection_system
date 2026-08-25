@@ -1,8 +1,13 @@
 """
-Run the classifier against golden_dataset.yaml and report three scores:
+Run the classifier against golden_dataset.yaml and report:
 1. Category accuracy — exact match against expected_category.
 2. Fact coverage — do expected_facts (keywords) appear in the summary.
 3. Judge accuracy — LLM-as-judge verdict on whether the summary is accurate.
+4. Overall pass — a case only counts as PASS if category matches, the judge
+   verdict is "pass", AND all expected_facts are present in the summary
+   (100% fact coverage for that case).
+
+Results are saved as YAML to eval_results/, mirroring what's printed here.
 
 Usage: python run_eval.py [prompt_version]
 Example: python run_eval.py v2
@@ -10,9 +15,8 @@ Example: python run_eval.py v2
 
 import os
 import sys
-import json
 import time
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -32,6 +36,20 @@ def facts_covered(summary: str, expected_facts: list[str]) -> tuple[int, int]:
     return hits, len(expected_facts)
 
 
+def _call_with_retry(func, *args, retries=2, **kwargs):
+    """Retries once on transient API failures (empty/malformed generations)
+    before giving up and letting the exception propagate."""
+    last_error = None
+    for attempt in range(retries):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            last_error = e
+            if attempt < retries - 1:
+                time.sleep(1)
+    raise last_error
+
+
 def main():
     load_dotenv()
 
@@ -48,21 +66,28 @@ def main():
     with open("golden_dataset.yaml") as f:
         cases = yaml.safe_load(f)
 
-    print(f"Running {len(cases)} cases against prompt {prompt_version}\n")
+    run_started_at = datetime.now().astimezone()  # local time, correct UTC offset included
+    print(f"Running {len(cases)} cases against prompt {prompt_version}")
+    print(f"Started: {run_started_at.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)')}\n")
 
+    overall_passed = 0
     category_passed = 0
     judge_passed = 0
     total_facts_hit = 0
     total_facts_expected = 0
-    failed_category_cases = []
-    failed_judge_cases = []
-    per_case_results = {}
+    total_tokens = 0
+    case_records = []
 
     for case in cases:
         try:
-            start = time.time()
-            result = classify_email(client, prompt_config, case["sender"], case["subject"], case["body"])
-            latency = round(time.time() - start, 2)
+            start = time.perf_counter()
+            try:
+                result = _call_with_retry(
+                    classify_email, client, prompt_config, case["sender"], case["subject"], case["body"]
+                )
+            except Exception as e:
+                raise RuntimeError(f"classify_email failed: {e}") from e
+            latency = round(time.perf_counter() - start, 2)
 
             actual_category = result.get("category")
             actual_summary = result.get("summary", "")
@@ -71,67 +96,113 @@ def main():
             category_ok = actual_category == expected_category
             if category_ok:
                 category_passed += 1
-            else:
-                failed_category_cases.append(case["id"])
 
             hits, expected_count = facts_covered(actual_summary, case.get("expected_facts", []))
             total_facts_hit += hits
             total_facts_expected += expected_count
 
-            judge_result = judge_summary(client, case["sender"], case["subject"], case["body"], actual_summary)
+            try:
+                judge_result = _call_with_retry(
+                    judge_summary, client, case["sender"], case["subject"], case["body"], actual_summary
+                )
+            except Exception as e:
+                raise RuntimeError(f"judge_summary failed: {e}") from e
             judge_ok = judge_result.get("verdict") == "pass"
+            judge_reason = judge_result.get("reason", "")
             if judge_ok:
                 judge_passed += 1
-            else:
-                failed_judge_cases.append((case["id"], judge_result.get("reason", "")))
 
-            per_case_results[case["id"]] = {
+            facts_ok = hits == expected_count
+
+            overall_ok = category_ok and judge_ok and facts_ok
+            if overall_ok:
+                overall_passed += 1
+
+            case_tokens = result.get("_usage", {}).get("total_tokens", 0) + judge_result.get("_usage", {}).get("total_tokens", 0)
+            total_tokens += case_tokens
+
+            case_records.append({
+                "id": case["id"],
+                "difficulty": case.get("difficulty"),
+                "expected_category": expected_category,
+                "actual_category": actual_category,
                 "category_pass": category_ok,
                 "judge_pass": judge_ok,
+                "judge_reason": judge_reason,
                 "facts_hit": hits,
                 "facts_expected": expected_count,
+                "facts_pass": facts_ok,
+                "actual_summary": actual_summary,
                 "latency_sec": latency,
-            }
+                "tokens_used": case_tokens,
+                "overall_pass": overall_ok,
+            })
 
-            status = "PASS" if category_ok else "FAIL"
+            status = "PASS" if overall_ok else "FAIL"
             judge_flag = "" if judge_ok else " [judge:fail]"
+            cat_flag = "" if category_ok else " [category:fail]"
             facts_flag = f" facts={hits}/{expected_count}" if expected_count else ""
-            print(f"{status}  {case['id']:10s} expected={expected_category:12s} got={actual_category}{facts_flag}{judge_flag}")
+            facts_fail_flag = "" if facts_ok else " [facts:fail]"
+            print(f"{status}  {case['id']:10s} expected={expected_category:12s} got={actual_category}{facts_flag}{cat_flag}{judge_flag}{facts_fail_flag}")
 
         except Exception as e:
-            failed_category_cases.append(case["id"])
-            per_case_results[case["id"]] = {"error": str(e)}
-            print(f"ERROR {case['id']:10s} {e}")
+            print(f"ERROR {case['id']:10s} (after retries) {e}")
+            case_records.append({
+                "id": case["id"],
+                "difficulty": case.get("difficulty"),
+                "expected_category": case["expected_category"],
+                "error": str(e),
+                "overall_pass": False,
+            })
 
     total = len(cases)
-    category_accuracy = category_passed / total * 100
-    judge_accuracy = judge_passed / total * 100
-    fact_coverage = (total_facts_hit / total_facts_expected * 100) if total_facts_expected else 0
+    category_accuracy = round(category_passed / total * 100, 1)
+    judge_accuracy = round(judge_passed / total * 100, 1)
+    overall_pass_rate = round(overall_passed / total * 100, 1)
+    fact_coverage = round(total_facts_hit / total_facts_expected * 100, 1) if total_facts_expected else 0.0
 
-    print(f"\nCategory accuracy: {category_passed}/{total} ({category_accuracy:.1f}%)")
-    print(f"Fact coverage:     {total_facts_hit}/{total_facts_expected} ({fact_coverage:.1f}%)")
-    print(f"Judge accuracy:    {judge_passed}/{total} ({judge_accuracy:.1f}%)")
+    run_finished_at = datetime.now().astimezone()
+    duration_sec = round((run_finished_at - run_started_at).total_seconds(), 1)
 
-    if failed_category_cases:
-        print(f"\nFailed category: {', '.join(failed_category_cases)}")
-    if failed_judge_cases:
-        print("Failed judge:")
-        for case_id, reason in failed_judge_cases:
-            print(f"  {case_id}: {reason}")
+    print(f"\nOverall pass rate: {overall_passed}/{total} ({overall_pass_rate}%)  <- requires category + judge + 100% fact coverage, all three")
+    print(f"Category accuracy: {category_passed}/{total} ({category_accuracy}%)")
+    print(f"Judge accuracy:    {judge_passed}/{total} ({judge_accuracy}%)")
+    print(f"Fact coverage:     {total_facts_hit}/{total_facts_expected} ({fact_coverage}%)")
+    print(f"Total tokens used: {total_tokens} ({round(total_tokens / total)} avg/case)")
+    print(f"Duration: {duration_sec}s")
 
-    # Save this run so compare_runs.py has something to diff against
+    failed_ids = [c["id"] for c in case_records if not c["overall_pass"]]
+    if failed_ids:
+        print(f"\nFailed overall: {', '.join(failed_ids)}")
+
+    # Save the full run as YAML, mirroring what was just printed
     RESULTS_DIR.mkdir(exist_ok=True)
     run_record = {
         "prompt_version": prompt_version,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "category_accuracy": category_accuracy,
-        "judge_accuracy": judge_accuracy,
-        "fact_coverage": fact_coverage,
-        "cases": per_case_results,
+        "started_at": run_started_at.isoformat(),
+        "finished_at": run_finished_at.isoformat(),
+        "duration_sec": duration_sec,
+        "total_cases": total,
+        "summary": {
+            "overall_pass_rate": overall_pass_rate,
+            "overall_passed": overall_passed,
+            "category_accuracy": category_accuracy,
+            "category_passed": category_passed,
+            "judge_accuracy": judge_accuracy,
+            "judge_passed": judge_passed,
+            "fact_coverage": fact_coverage,
+            "facts_hit": total_facts_hit,
+            "facts_expected": total_facts_expected,
+            "total_tokens": total_tokens,
+            "avg_tokens_per_case": round(total_tokens / total),
+        },
+        "failed_case_ids": failed_ids,
+        "cases": case_records,
     }
-    out_path = RESULTS_DIR / f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}_{prompt_version}.json"
+
+    out_path = RESULTS_DIR / f"{run_started_at.strftime('%Y%m%dT%H%M%S')}_{prompt_version}.yaml"
     with open(out_path, "w") as f:
-        json.dump(run_record, f, indent=2)
+        yaml.safe_dump(run_record, f, sort_keys=False, allow_unicode=True)
     print(f"\nSaved run to {out_path}")
 
 
