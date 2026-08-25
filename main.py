@@ -59,15 +59,18 @@ def save_processed_ids(ids):
 
 
 def get_unread_messages(service, max_results=10):
-    """Fetch unread messages from the inbox."""
+    """Fetch the N most recent unread messages, regardless of category tab."""
     results = (
         service.users()
         .messages()
-        .list(userId="me", labelIds=["INBOX", "UNREAD"], maxResults=max_results)
+        .list(
+            userId="me",
+            q="is:unread category:primary",
+            maxResults=max_results,
+        )
         .execute()
     )
     return results.get("messages", [])
-
 
 def extract_body(payload):
     """Pull plain text body out of a Gmail message payload."""
@@ -96,14 +99,16 @@ def get_message_details(service, msg_id):
     subject = next((h["value"] for h in headers if h["name"] == "Subject"), "(no subject)")
     sender = next((h["value"] for h in headers if h["name"] == "From"), "(unknown sender)")
     body = extract_body(msg["payload"])
+    timestamp = int(msg.get("internalDate", 0))
 
-    return {"id": msg_id, "subject": subject, "sender": sender, "body": body}
+    return {"id": msg_id, "subject": subject, "sender": sender, "body": body, "timestamp": timestamp}
 
 
 def categorize(groq_client, subject, sender, body):
     """Ask Groq for a single-word category label for the email."""
     prompt = f"""Classify this email with exactly ONE word (a category label,
-e.g. Work, Newsletter, Promotion, Finance, Social, Travel, Support, Personal, Spam).
+e.g. Work, Newsletter, Promotion, Finance, Social, Travel, Support, Personal,
+Learning, News, Community, Productivity, Recruiting, Crypto, Faith, Meeting, Spam).
 
 From: {sender}
 Subject: {subject}
@@ -116,7 +121,7 @@ Respond with only the single category word, nothing else."""
         model=GROQ_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
-        max_tokens=20,
+        max_tokens=100,
         reasoning_effort="low",
     )
     return response.choices[0].message.content.strip()
@@ -143,13 +148,15 @@ def main():
 
     print(f"Found {len(new_messages)} new unread message(s).\n")
 
-    for m in new_messages:
-        details = get_message_details(service, m["id"])
+    details_list = [get_message_details(service, m["id"]) for m in new_messages]
+    details_list.sort(key=lambda d: d["timestamp"], reverse=True)
+
+    for details in details_list:
         category = categorize(groq_client, details["subject"], details["sender"], details["body"])
 
         print(f"[{category}] {details['subject']}  —  {details['sender']}")
 
-        processed_ids.add(m["id"])
+        processed_ids.add(details["id"])
 
     save_processed_ids(processed_ids)
 

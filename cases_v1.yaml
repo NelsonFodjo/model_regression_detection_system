@@ -1,0 +1,169 @@
+# Golden dataset for the mail categorizer (categorize() in main.py).
+# Hand-written, not LLM-generated. Each case has an unambiguous expected
+# label except where difficulty is explicitly "edge" — those are included
+# to expose failure modes, not to be "gamed" by the classifier.
+#
+# difficulty: easy | medium | edge
+# Categories in play: Work, Newsletter, Promotion, Finance, Social, Travel,
+# Support, Personal, Learning, News, Community, Productivity, Recruiting,
+# Crypto, Faith, Meeting, Spam
+
+- id: case_01
+  subject: "Q3 report deadline moved to Friday"
+  sender: "stephan@rtknits.mu"
+  body: "Hi Nelson, the Q3 report deadline has been moved up to Friday. Can you have the automation summary ready by then?"
+  expected_category: Work
+  difficulty: easy
+  notes: "Clean internal work email, direct task language, known colleague domain."
+
+- id: case_02
+  subject: "This week in AI"
+  sender: "digest@example.com"
+  body: "Your weekly roundup of AI news: new model releases, funding rounds, and research papers worth reading."
+  expected_category: Newsletter
+  difficulty: easy
+  notes: "Canonical newsletter framing (roundup/digest language)."
+
+- id: case_03
+  subject: "Free Access Week is live. Continue your track today"
+  sender: "team@datacamp.com"
+  body: "This week only, get free access to every DataCamp course. Jump back into your Python track and keep your streak going."
+  expected_category: Promotion
+  difficulty: medium
+  notes: "Overlaps with Learning (it's an edtech platform) but the framing is a limited-time offer, not lesson content — should resolve to Promotion."
+
+- id: case_04
+  subject: "Important: Transactions with Certain Crypto Platforms"
+  sender: "compliance@binance.com"
+  body: "Dear customer, following recent regulatory developments, we will no longer be processing transactions with certain platforms effective next month."
+  expected_category: Crypto
+  difficulty: easy
+  notes: "Sender and content both unambiguous."
+
+- id: case_05
+  subject: "jacinta just joined your workspace!"
+  sender: "notifications@slack.com"
+  body: "Head to Slack to say hi to jacinta. Hop over to connect with jacinta, who just arrived."
+  expected_category: Social
+  difficulty: edge
+  notes: "Could plausibly be Community (workspace/team framing) or Work (it's a work tool). Testing whether the classifier defaults to the literal 'someone joined a social space' framing or overthinks it into Work."
+
+- id: case_06
+  subject: "Your flight to Cape Town is confirmed"
+  sender: "noreply@airline.com"
+  body: "Booking reference AB123CD. Departure 14:20, arrival 17:45. Check in opens 24 hours before departure."
+  expected_category: Travel
+  difficulty: easy
+  notes: "Standard airline confirmation."
+
+- id: case_07
+  subject: "Re: Issue with my account login"
+  sender: "support@somesaas.com"
+  body: "Thanks for reaching out. We've reset your password — please check your inbox for the reset link and let us know if you're still locked out."
+  expected_category: Support
+  difficulty: easy
+  notes: "Clear support ticket reply."
+
+- id: case_08
+  subject: "Happy birthday!"
+  sender: "mom@gmail.com"
+  body: "Happy birthday my dear, hope you have a wonderful day. Call me when you get a chance."
+  expected_category: Personal
+  difficulty: easy
+  notes: "Personal relationship + informal tone, no institutional sender."
+
+- id: case_09
+  subject: "Vivre vs habiter — What's the difference?"
+  sender: "learn@frenchlearner.com"
+  body: "They're similar but different! Vivre is about being alive or how you live your life, while habiter is specifically about where you reside."
+  expected_category: Learning
+  difficulty: medium
+  notes: "Overlaps with Newsletter (recurring digest format) but content is instructional, not a roundup — should resolve to Learning."
+
+- id: case_10
+  subject: "Health minister had surgery at a public hospital, with his private doctor present"
+  sender: "editor@4minitdailynews.com"
+  body: "Father arrested over the killing of his baby son in Roche-Bois. Bush fires reported in three districts overnight."
+  expected_category: News
+  difficulty: easy
+  notes: "Straightforward news digest, distinct from Newsletter by subject matter (current events vs curated content)."
+
+- id: case_11
+  subject: "Reminder: Last two weeks to join GLRC 2026"
+  sender: "alumni@iymc.info"
+  body: "Dear Nelson, we wanted to remind our community that the deadline to register for GLRC 2026 is approaching. We'd love to see you there."
+  expected_category: Community
+  difficulty: medium
+  notes: "Could read as Newsletter (reminder format) but the sender and 'our community' framing point to Community. Tests sender-context weighting."
+
+- id: case_12
+  subject: "Your meeting recap - NELCO Explains 0795CSC Weekly Retrospective"
+  sender: "recap@fireflies.ai"
+  body: "Fodjo Nelson invited Fireflies to your meeting to record and transcribe it. Your recap and action items are ready to view."
+  expected_category: Meeting
+  difficulty: medium
+  notes: "Overlaps heavily with Productivity (same tool category) but content is specifically about a single meeting's recap — should resolve to Meeting over generic Productivity."
+
+- id: case_13
+  subject: "Action Required! Some tl;dv recordings will be deleted in 7 days"
+  sender: "team@tldv.io"
+  body: "In a few days, 6 of your recordings recorded prior to June 2026 will be deleted due to storage limits. Upgrade or export to keep them."
+  expected_category: Productivity
+  difficulty: edge
+  notes: "Keyword bait: 'Action Required!' phrasing mimics urgent Support or Spam framing, but this is a routine product lifecycle notice from a productivity tool. Tests whether alarm-language triggers a false Spam/Support classification."
+
+- id: case_14
+  subject: "Fodjo, I think this job might be right for you!"
+  sender: "phil@ziprecruiter.com"
+  body: "Hi Fodjo, here's a new job at Global Healthcare Resource. I wanted to get it in front of you ASAP to help you get hired faster."
+  expected_category: Recruiting
+  difficulty: easy
+  notes: "Clear recruiter outreach, unambiguous sender and intent."
+
+- id: case_15
+  subject: "Today's Reading From Bible Gateway - August 24, 2026"
+  sender: "devotionals@biblegateway.com"
+  body: "Verse of the Day: your reading for today is ready. Each of your subscribed Bible reading plans has a new entry waiting."
+  expected_category: Faith
+  difficulty: easy
+  notes: "Unambiguous sender and content."
+
+- id: case_16
+  subject: "Security alert"
+  sender: "no-reply@accounts.google.com"
+  body: "New sign-in on Windows. If this wasn't you, please secure your account immediately by resetting your password."
+  expected_category: Support
+  difficulty: edge
+  notes: "Could be misread as Spam (alarming security language, generic no-reply sender) but this is a legitimate account-security notice, which is closest to Support. Tests whether tone alone triggers a false Spam label."
+
+- id: case_17
+  subject: "Your project seismic-machine-437520-c1 has been shut down"
+  sender: "PlatformNotifications-noreply@google.com"
+  body: "This is an automated notice that your Google Cloud project has been shut down due to inactivity or billing issues."
+  expected_category: Work
+  difficulty: medium
+  notes: "Automated/impersonal tone could tempt a Spam label, but it's a legitimate operational notice about a real project — should resolve to Work."
+
+- id: case_18
+  subject: "RE: RE: RE: FWD: You have won!!!"
+  sender: "prize-claim@totally-legit-lottery.biz"
+  body: "CONGRATULATIONS!!! You have been selected to receive $1,000,000 USD. Reply immediately with your bank details to claim your prize before it expires."
+  expected_category: Spam
+  difficulty: easy
+  notes: "Canonical spam markers: too-good-to-be-true claim, urgency, request for financial details, disposable-looking domain."
+
+- id: case_19
+  subject: "hey"
+  sender: "unknown-1234@mailinator.com"
+  body: "hi"
+  expected_category: Spam
+  difficulty: edge
+  notes: "Near-empty content with no institutional signal and a disposable-looking sender domain. Could plausibly be Personal (short informal message) — tests whether the classifier over-indexes on brevity vs sender legitimacy."
+
+- id: case_20
+  subject: "Kdo pa je ta? Sporočilo je nujno."
+  sender: "info@random-eu-shop.si"
+  body: "Preverite našo novo ponudbo! Popust 50% samo danes. Kliknite tukaj za več informacij."
+  expected_category: Promotion
+  difficulty: edge
+  notes: "Mixed/non-English content (Slovenian). Body clearly describes a discount offer despite the language barrier — tests whether the classifier can still extract intent from non-English text rather than defaulting to Spam or failing silently."
