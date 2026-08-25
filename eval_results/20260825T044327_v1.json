@@ -1,0 +1,355 @@
+{
+  "prompt_version": "v1",
+  "timestamp": "2026-08-25T04:43:27.657693+00:00",
+  "category_accuracy": 84.0,
+  "judge_accuracy": 80.0,
+  "fact_coverage": 87.2340425531915,
+  "cases": {
+    "case_01": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 1.69
+    },
+    "case_02": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.69
+    },
+    "case_03": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.83
+    },
+    "case_04": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.61
+    },
+    "case_05": {
+      "category_pass": false,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.61
+    },
+    "case_06": {
+      "error": "Error code: 400 - {'error': {'message': \"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.\", 'type': 'invalid_request_error', 'code': 'json_validate_failed', 'failed_generation': 'max completion tokens reached before generating a valid document'}}"
+    },
+    "case_07": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.62
+    },
+    "case_08": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 1,
+      "facts_expected": 1,
+      "latency_sec": 0.82
+    },
+    "case_09": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.83
+    },
+    "case_10": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 0,
+      "facts_expected": 2,
+      "latency_sec": 0.82
+    },
+    "case_11": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 1,
+      "facts_expected": 2,
+      "latency_sec": 0.82
+    },
+    "case_12": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.82
+    },
+    "case_13": {
+      "category_pass": false,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.72
+    },
+    "case_14": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.61
+    },
+    "case_15": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 0.82
+    },
+    "case_16": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.25
+    },
+    "case_17": {
+      "category_pass": false,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.28
+    },
+    "case_18": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 1,
+      "facts_expected": 2,
+      "latency_sec": 3.11
+    },
+    "case_19": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 0,
+      "facts_expected": 0,
+      "latency_sec": 3.27
+    },
+    "case_20": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.04
+    },
+    "case_21": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 1,
+      "facts_expected": 2,
+      "latency_sec": 2.89
+    },
+    "case_22": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 2.88
+    },
+    "case_23": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 0,
+      "facts_expected": 2,
+      "latency_sec": 2.87
+    },
+    "case_24": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 1,
+      "facts_expected": 2,
+      "latency_sec": 2.86
+    },
+    "case_25": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.08
+    },
+    "case_26": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 2.87
+    },
+    "case_27": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 1,
+      "facts_expected": 2,
+      "latency_sec": 3.07
+    },
+    "case_28": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 1,
+      "facts_expected": 1,
+      "latency_sec": 2.66
+    },
+    "case_29": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.17
+    },
+    "case_30": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.07
+    },
+    "case_31": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.25
+    },
+    "case_32": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 2.87
+    },
+    "case_33": {
+      "category_pass": false,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.08
+    },
+    "case_34": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 1,
+      "facts_expected": 2,
+      "latency_sec": 3.07
+    },
+    "case_35": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.0
+    },
+    "case_36": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.08
+    },
+    "case_37": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 1,
+      "facts_expected": 2,
+      "latency_sec": 2.86
+    },
+    "case_38": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.08
+    },
+    "case_39": {
+      "category_pass": false,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.25
+    },
+    "case_40": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 2.85
+    },
+    "case_41": {
+      "category_pass": false,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.06
+    },
+    "case_42": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.2
+    },
+    "case_43": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.07
+    },
+    "case_44": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 2.87
+    },
+    "case_45": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.26
+    },
+    "case_46": {
+      "category_pass": false,
+      "judge_pass": true,
+      "facts_hit": 1,
+      "facts_expected": 2,
+      "latency_sec": 3.25
+    },
+    "case_47": {
+      "category_pass": false,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.09
+    },
+    "case_48": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.42
+    },
+    "case_49": {
+      "category_pass": true,
+      "judge_pass": false,
+      "facts_hit": 2,
+      "facts_expected": 2,
+      "latency_sec": 3.07
+    },
+    "case_50": {
+      "category_pass": true,
+      "judge_pass": true,
+      "facts_hit": 0,
+      "facts_expected": 0,
+      "latency_sec": 3.06
+    }
+  }
+}

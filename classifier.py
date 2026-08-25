@@ -1,6 +1,7 @@
 """
-The feature under test. One function: load a prompt version, classify one
-email, return {"category": ..., "summary": ...}.
+The feature under test (classify_email) and its judge (judge_summary).
+Kept in one file — judge_summary is a separate function/prompt, but there's
+no real reason to split it into its own module.
 """
 
 import json
@@ -9,6 +10,21 @@ from groq import Groq
 
 MODEL = "openai/gpt-oss-20b"
 
+JUDGE_PROMPT = """You are grading an email summary for accuracy.
+
+Original email:
+From: {sender}
+Subject: {subject}
+Body: {body}
+
+Generated summary: "{summary}"
+
+Does this summary accurately and specifically represent what the email is
+about? It should mention the concrete subject matter, not just be vague or
+generic. It should not contain facts that aren't in the email.
+
+Respond with ONLY valid JSON: {{"verdict": "pass" or "fail", "reason": "<one short sentence>"}}"""
+
 
 def load_prompt(path):
     with open(path) as f:
@@ -16,6 +32,7 @@ def load_prompt(path):
 
 
 def classify_email(client: Groq, prompt_config: dict, sender: str, subject: str, body: str) -> dict:
+    """Classifies one email into category + summary."""
     messages = [
         {"role": "system", "content": prompt_config["system_prompt"]},
         {"role": "user", "content": f"From: {sender}\nSubject: {subject}\nBody:\n{body[:3000]}"},
@@ -25,7 +42,23 @@ def classify_email(client: Groq, prompt_config: dict, sender: str, subject: str,
         model=MODEL,
         messages=messages,
         temperature=0,
-        max_tokens=150,
+        max_tokens=250,
+        reasoning_effort="low",
+        response_format={"type": "json_object"},
+    )
+
+    return json.loads(response.choices[0].message.content.strip())
+
+
+def judge_summary(client: Groq, sender: str, subject: str, body: str, summary: str) -> dict:
+    """Separate LLM call that grades whether a generated summary is accurate."""
+    prompt = JUDGE_PROMPT.format(sender=sender, subject=subject, body=body[:1500], summary=summary)
+
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0,
+        max_tokens=200,
         reasoning_effort="low",
         response_format={"type": "json_object"},
     )

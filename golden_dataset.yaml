@@ -1,5 +1,7 @@
-# Golden dataset for the mail categorizer. Hand-written, not LLM-generated.
+# Golden dataset v2 for the mail categorizer. Hand-written, not LLM-generated.
 # difficulty: easy | medium | edge
+# expected_facts: 2-3 key facts the summary must mention (case-insensitive
+# substring match) to be scored as covering the email correctly.
 
 - id: case_01
   subject: "Q3 report deadline moved to Friday"
@@ -7,6 +9,7 @@
   body: "Hi Nelson, the Q3 report deadline has been moved up to Friday. Can you have the automation summary ready by then?"
   expected_category: Work
   difficulty: easy
+  expected_facts: ["deadline", "Friday"]
 
 - id: case_02
   subject: "This week in AI"
@@ -14,6 +17,7 @@
   body: "Your weekly roundup of AI news: new model releases, funding rounds, and research papers worth reading."
   expected_category: Newsletter
   difficulty: easy
+  expected_facts: ["AI", "roundup"]
 
 - id: case_03
   subject: "Free Access Week is live. Continue your track today"
@@ -21,6 +25,7 @@
   body: "This week only, get free access to every DataCamp course. Jump back into your Python track and keep your streak going."
   expected_category: Promotion
   difficulty: medium
+  expected_facts: ["free access", "DataCamp"]
 
 - id: case_04
   subject: "Important: Transactions with Certain Crypto Platforms"
@@ -28,6 +33,7 @@
   body: "Dear customer, following recent regulatory developments, we will no longer be processing transactions with certain platforms effective next month."
   expected_category: Crypto
   difficulty: easy
+  expected_facts: ["Binance", "transactions"]
 
 - id: case_05
   subject: "jacinta just joined your workspace!"
@@ -35,6 +41,7 @@
   body: "Head to Slack to say hi to jacinta. Hop over to connect with jacinta, who just arrived."
   expected_category: Social
   difficulty: edge
+  expected_facts: ["jacinta", "joined"]
 
 - id: case_06
   subject: "Your flight to Cape Town is confirmed"
@@ -42,6 +49,7 @@
   body: "Booking reference AB123CD. Departure 14:20, arrival 17:45. Check in opens 24 hours before departure."
   expected_category: Travel
   difficulty: easy
+  expected_facts: ["flight", "Cape Town"]
 
 - id: case_07
   subject: "Re: Issue with my account login"
@@ -49,6 +57,7 @@
   body: "Thanks for reaching out. We've reset your password — please check your inbox for the reset link and let us know if you're still locked out."
   expected_category: Support
   difficulty: easy
+  expected_facts: ["password", "reset"]
 
 - id: case_08
   subject: "Happy birthday!"
@@ -56,6 +65,7 @@
   body: "Happy birthday my dear, hope you have a wonderful day. Call me when you get a chance."
   expected_category: Personal
   difficulty: easy
+  expected_facts: ["birthday"]
 
 - id: case_09
   subject: "Vivre vs habiter — What's the difference?"
@@ -63,6 +73,7 @@
   body: "They're similar but different! Vivre is about being alive or how you live your life, while habiter is specifically about where you reside."
   expected_category: Learning
   difficulty: medium
+  expected_facts: ["vivre", "habiter"]
 
 - id: case_10
   subject: "Health minister had surgery at a public hospital, with his private doctor present"
@@ -70,6 +81,7 @@
   body: "Father arrested over the killing of his baby son in Roche-Bois. Bush fires reported in three districts overnight."
   expected_category: News
   difficulty: easy
+  expected_facts: ["arrested", "Roche-Bois"]
 
 - id: case_11
   subject: "Reminder: Last two weeks to join GLRC 2026"
@@ -77,6 +89,7 @@
   body: "Dear Nelson, we wanted to remind our community that the deadline to register for GLRC 2026 is approaching. We'd love to see you there."
   expected_category: Community
   difficulty: medium
+  expected_facts: ["GLRC 2026", "deadline"]
 
 - id: case_12
   subject: "Your meeting recap - NELCO Explains 0795CSC Weekly Retrospective"
@@ -84,6 +97,7 @@
   body: "Fodjo Nelson invited Fireflies to your meeting to record and transcribe it. Your recap and action items are ready to view."
   expected_category: Meeting
   difficulty: medium
+  expected_facts: ["recap", "action items"]
 
 - id: case_13
   subject: "Action Required! Some tl;dv recordings will be deleted in 7 days"
@@ -91,6 +105,7 @@
   body: "In a few days, 6 of your recordings recorded prior to June 2026 will be deleted due to storage limits. Upgrade or export to keep them."
   expected_category: Productivity
   difficulty: edge
+  expected_facts: ["recordings", "deleted"]
 
 - id: case_14
   subject: "Fodjo, I think this job might be right for you!"
@@ -98,6 +113,7 @@
   body: "Hi Fodjo, here's a new job at Global Healthcare Resource. I wanted to get it in front of you ASAP to help you get hired faster."
   expected_category: Recruiting
   difficulty: easy
+  expected_facts: ["job", "Global Healthcare Resource"]
 
 - id: case_15
   subject: "Today's Reading From Bible Gateway - August 24, 2026"
@@ -105,6 +121,7 @@
   body: "Verse of the Day: your reading for today is ready. Each of your subscribed Bible reading plans has a new entry waiting."
   expected_category: Faith
   difficulty: easy
+  expected_facts: ["reading", "Bible"]
 
 - id: case_16
   subject: "Security alert"
@@ -112,6 +129,7 @@
   body: "New sign-in on Windows. If this wasn't you, please secure your account immediately by resetting your password."
   expected_category: Support
   difficulty: edge
+  expected_facts: ["sign-in", "account"]
 
 - id: case_17
   subject: "Your project seismic-machine-437520-c1 has been shut down"
@@ -119,6 +137,7 @@
   body: "This is an automated notice that your Google Cloud project has been shut down due to inactivity or billing issues."
   expected_category: Work
   difficulty: medium
+  expected_facts: ["project", "shut down"]
 
 - id: case_18
   subject: "RE: RE: RE: FWD: You have won!!!"
@@ -126,6 +145,7 @@
   body: "CONGRATULATIONS!!! You have been selected to receive $1,000,000 USD. Reply immediately with your bank details to claim your prize before it expires."
   expected_category: Spam
   difficulty: easy
+  expected_facts: ["won", "bank details"]
 
 - id: case_19
   subject: "hey"
@@ -133,6 +153,7 @@
   body: "hi"
   expected_category: Spam
   difficulty: edge
+  expected_facts: []
 
 - id: case_20
   subject: "Kdo pa je ta? Sporočilo je nujno."
@@ -140,3 +161,244 @@
   body: "Preverite našo novo ponudbo! Popust 50% samo danes. Kliknite tukaj za več informacij."
   expected_category: Promotion
   difficulty: edge
+  expected_facts: ["discount", "50%"]
+
+- id: case_21
+  subject: "Your invoice for August is ready"
+  sender: "billing@cloudhost.com"
+  body: "Your invoice for August is available in your billing dashboard. Amount due: $42.00, due September 5th."
+  expected_category: Finance
+  difficulty: medium
+  expected_facts: ["invoice", "$42"]
+
+- id: case_22
+  subject: "Weekly standup notes — August 18"
+  sender: "chrys@rtknits.mu"
+  body: "Here are this week's standup notes. Nita rebuild is on track, blockers discussed around the Postgres schema."
+  expected_category: Work
+  difficulty: easy
+  expected_facts: ["standup", "Nita"]
+
+- id: case_23
+  subject: "50% off everything — today only"
+  sender: "deals@fashionoutlet.com"
+  body: "Flash sale! Get 50% off your entire order today only. Use code FLASH50 at checkout."
+  expected_category: Promotion
+  difficulty: easy
+  expected_facts: ["50% off", "FLASH50"]
+
+- id: case_24
+  subject: "Your monthly statement is available"
+  sender: "statements@mybank.mu"
+  body: "Your account statement for August is now available. Closing balance: MUR 34,200. Log in to view full details."
+  expected_category: Finance
+  difficulty: easy
+  expected_facts: ["statement", "balance"]
+
+- id: case_25
+  subject: "someone followed you on GitHub"
+  sender: "notifications@github.com"
+  body: "devrel_amy started following you on GitHub. Check out their profile and repositories."
+  expected_category: Social
+  difficulty: medium
+  expected_facts: ["followed", "GitHub"]
+
+- id: case_26
+  subject: "Your Airbnb reservation is confirmed"
+  sender: "automated@airbnb.com"
+  body: "Your stay at Ocean View Studio, Grand Baie is confirmed for Sept 10-14. Check-in instructions attached."
+  expected_category: Travel
+  difficulty: easy
+  expected_facts: ["reservation", "Grand Baie"]
+
+- id: case_27
+  subject: "We've received your support ticket #48213"
+  sender: "help@saastool.com"
+  body: "Thanks for contacting support. Ticket #48213 has been created and a team member will respond within 24 hours."
+  expected_category: Support
+  difficulty: easy
+  expected_facts: ["ticket #48213", "24 hours"]
+
+- id: case_28
+  subject: "Miss you, call me when free"
+  sender: "dad@yahoo.com"
+  body: "Hey son, just checking in. Haven't heard from you in a while, call me when you get a chance."
+  expected_category: Personal
+  difficulty: easy
+  expected_facts: ["call"]
+
+- id: case_29
+  subject: "New course: Advanced SQL for Data Analysis"
+  sender: "courses@coursera.org"
+  body: "A new course matching your interests just launched: Advanced SQL for Data Analysis. Enroll now to start learning."
+  expected_category: Learning
+  difficulty: medium
+  expected_facts: ["course", "SQL"]
+
+- id: case_30
+  subject: "Breaking: Central bank raises interest rate to 4.5%"
+  sender: "alerts@reuters.com"
+  body: "The central bank announced a rate hike to 4.5% today, citing inflation concerns. Markets reacted with a modest dip."
+  expected_category: News
+  difficulty: easy
+  expected_facts: ["interest rate", "4.5%"]
+
+- id: case_31
+  subject: "shipUp Week 3: demo reminder"
+  sender: "team@shipup.community"
+  body: "This week's shipUp demo is Wednesday at 6pm on Google Meet. Make sure your project is ready to show."
+  expected_category: Community
+  difficulty: medium
+  expected_facts: ["shipUp", "demo"]
+
+- id: case_32
+  subject: "Calendar invite: 1:1 with Stephan"
+  sender: "calendar-notification@google.com"
+  body: "You have a meeting: 1:1 with Stephan, Thursday 10:00 AM - 10:30 AM. Google Meet link included."
+  expected_category: Meeting
+  difficulty: easy
+  expected_facts: ["1:1", "Stephan"]
+
+- id: case_33
+  subject: "Your Notion workspace usage summary"
+  sender: "digest@notion.so"
+  body: "You created 8 pages and completed 15 tasks this week. Here's your productivity breakdown."
+  expected_category: Productivity
+  difficulty: easy
+  expected_facts: ["Notion", "tasks"]
+
+- id: case_34
+  subject: "We're hiring — does this match your background?"
+  sender: "talent@techstartup.io"
+  body: "Hi Nelson, your GitHub profile caught our attention. We have an open AI Engineer role that looks like a strong fit."
+  expected_category: Recruiting
+  difficulty: easy
+  expected_facts: ["AI Engineer", "role"]
+
+- id: case_35
+  subject: "Your ETH wallet has a pending transaction"
+  sender: "alerts@metamask.io"
+  body: "A transaction of 0.05 ETH is pending confirmation on your wallet. Gas fee estimated at 0.002 ETH."
+  expected_category: Crypto
+  difficulty: easy
+  expected_facts: ["ETH", "transaction"]
+
+- id: case_36
+  subject: "This Sunday's sermon: Faith Over Fear"
+  sender: "church@localchurch.org"
+  body: "Join us this Sunday for a message titled 'Faith Over Fear'. Service starts at 9:30 AM, livestream available."
+  expected_category: Faith
+  difficulty: easy
+  expected_facts: ["sermon", "Sunday"]
+
+- id: case_37
+  subject: "URGENT: verify your account within 24 hours or lose access"
+  sender: "security@paypal-verify-account.net"
+  body: "Your account has been flagged for unusual activity. Click here immediately and enter your login details to avoid permanent suspension."
+  expected_category: Spam
+  difficulty: edge
+  expected_facts: ["verify", "login details"]
+
+- id: case_38
+  subject: "Fwd: internship extension paperwork"
+  sender: "hr@rtknits.mu"
+  body: "Please find attached the paperwork for your internship extension. Sign and return by end of week."
+  expected_category: Work
+  difficulty: easy
+  expected_facts: ["internship", "paperwork"]
+
+- id: case_39
+  subject: "Your order has shipped"
+  sender: "orders@amazon.com"
+  body: "Your package containing 1 item is on its way. Estimated delivery: August 28. Track your package here."
+  expected_category: Promotion
+  difficulty: edge
+  expected_facts: ["shipped", "delivery"]
+
+- id: case_40
+  subject: "Payment received — thank you"
+  sender: "receipts@stripe.com"
+  body: "We've received your payment of $29.00 for Pro Plan subscription. Your receipt is attached."
+  expected_category: Finance
+  difficulty: medium
+  expected_facts: ["payment", "$29"]
+
+- id: case_41
+  subject: "g.umwiza just joined your workspace!"
+  sender: "notifications@slack.com"
+  body: "Head to Slack to say hi to g.umwiza. Hop over to connect with g.umwiza, who just arrived."
+  expected_category: Social
+  difficulty: edge
+  expected_facts: ["g.umwiza", "joined"]
+
+- id: case_42
+  subject: "Visa application status update"
+  sender: "noreply@vfsglobal.com"
+  body: "Your visa application reference VF20293 has moved to 'Processing'. Estimated completion in 5-7 business days."
+  expected_category: Travel
+  difficulty: medium
+  expected_facts: ["visa", "processing"]
+
+- id: case_43
+  subject: "Your GitHub Actions workflow failed"
+  sender: "notifications@github.com"
+  body: "Workflow 'deploy-prod' failed on branch main. Check the logs for details on the failure."
+  expected_category: Work
+  difficulty: edge
+  expected_facts: ["workflow", "failed"]
+
+- id: case_44
+  subject: "Reminder: your 1-on-1 mentorship session tomorrow"
+  sender: "scheduling@mentorplatform.com"
+  body: "This is a reminder that your mentorship session with your assigned mentor is scheduled for tomorrow at 3 PM."
+  expected_category: Meeting
+  difficulty: medium
+  expected_facts: ["mentorship session", "tomorrow"]
+
+- id: case_45
+  subject: "AlcheHQ community town hall — this Friday"
+  sender: "residentlife@alche.edu"
+  body: "Join fellow residents for the monthly town hall this Friday at 5 PM in the main hall. Refreshments provided."
+  expected_category: Community
+  difficulty: easy
+  expected_facts: ["town hall", "Friday"]
+
+- id: case_46
+  subject: "New sign-in to your Notion account from an unrecognized device"
+  sender: "security@notion.so"
+  body: "We noticed a new sign-in to your Notion account from a device we don't recognize. If this was you, no action needed."
+  expected_category: Support
+  difficulty: edge
+  expected_facts: ["sign-in", "Notion"]
+
+- id: case_47
+  subject: "Complete your profile to get better job matches"
+  sender: "noreply@linkedin.com"
+  body: "Your LinkedIn profile is 70% complete. Add your skills and experience to appear in more recruiter searches."
+  expected_category: Social
+  difficulty: edge
+  expected_facts: ["profile", "LinkedIn"]
+
+- id: case_48
+  subject: "Kahoot! Back to class starter pack"
+  sender: "kahoot@team.kahoot.com"
+  body: "Get your classroom ready with our back-to-school Kahoot pack. Limited time discount for educators."
+  expected_category: Promotion
+  difficulty: medium
+  expected_facts: ["Kahoot", "discount"]
+
+- id: case_49
+  subject: "Your weekly Duolingo streak report"
+  sender: "no-reply@duolingo.com"
+  body: "You're on a 12-day streak! Keep practicing Spanish today to maintain your streak and earn XP."
+  expected_category: Learning
+  difficulty: easy
+  expected_facts: ["streak", "Spanish"]
+
+- id: case_50
+  subject: "asdkjaslkdj klasjdlk asdlkj"
+  sender: "noreply@bulk-mailer-99.ru"
+  body: "askdjalskdj laksjdlk ajsdlkajsldk klasjdlkasjd. Click: http://totally-not-malware.ru/free-money"
+  expected_category: Spam
+  difficulty: easy
+  expected_facts: []
