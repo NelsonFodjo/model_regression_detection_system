@@ -1,6 +1,6 @@
 """
-Mail Summary — reads unread Gmail messages and generates a title + summary
-using Groq.
+Mail Summary (production) — reads unread Gmail messages and classifies each
+one using classifier.py + prompts/v1.yaml
 
 Run: python main.py
 """
@@ -15,15 +15,16 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-
 from groq import Groq
+
+from classifier import load_prompt, classify_email
 
 # --- Config ---
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 CREDENTIALS_FILE = "credentials.json"
 TOKEN_FILE = "token.json"
 PROCESSED_FILE = "processed_ids.json"
-GROQ_MODEL = "openai/gpt-oss-20b"
+PROMPT_VERSION = "v1"  # bump this after you validate a new version passes run_eval.py
 
 
 def get_gmail_service():
@@ -59,7 +60,7 @@ def save_processed_ids(ids):
 
 
 def get_unread_messages(service, max_results=10):
-    """Fetch the N most recent unread messages, regardless of category tab."""
+    """Fetch the N most recent unread messages from the Primary tab."""
     results = (
         service.users()
         .messages()
@@ -72,6 +73,7 @@ def get_unread_messages(service, max_results=10):
     )
     return results.get("messages", [])
 
+
 def extract_body(payload):
     """Pull plain text body out of a Gmail message payload."""
     if "parts" in payload:
@@ -80,7 +82,6 @@ def extract_body(payload):
                 return base64.urlsafe_b64decode(part["body"]["data"]).decode(
                     "utf-8", errors="ignore"
                 )
-            # Recurse into nested multipart messages
             if "parts" in part:
                 nested = extract_body(part)
                 if nested:
@@ -104,29 +105,6 @@ def get_message_details(service, msg_id):
     return {"id": msg_id, "subject": subject, "sender": sender, "body": body, "timestamp": timestamp}
 
 
-def categorize(groq_client, subject, sender, body):
-    """Ask Groq for a single-word category label for the email."""
-    prompt = f"""Classify this email with exactly ONE word (a category label,
-e.g. Work, Newsletter, Promotion, Finance, Social, Travel, Support, Personal,
-Learning, News, Community, Productivity, Recruiting, Crypto, Faith, Meeting, Spam).
-
-From: {sender}
-Subject: {subject}
-Body:
-{body[:2000]}
-
-Respond with only the single category word, nothing else."""
-
-    response = groq_client.chat.completions.create(
-        model=GROQ_MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0,
-        max_tokens=100,
-        reasoning_effort="low",
-    )
-    return response.choices[0].message.content.strip()
-
-
 def main():
     load_dotenv()
 
@@ -135,6 +113,8 @@ def main():
         raise SystemExit("Set GROQ_API_KEY as an environment variable before running.")
 
     groq_client = Groq(api_key=groq_api_key)
+    prompt_config = load_prompt(f"prompts/{PROMPT_VERSION}.yaml")
+
     service = get_gmail_service()
 
     processed_ids = load_processed_ids()
@@ -152,9 +132,10 @@ def main():
     details_list.sort(key=lambda d: d["timestamp"], reverse=True)
 
     for details in details_list:
-        category = categorize(groq_client, details["subject"], details["sender"], details["body"])
+        result = classify_email(groq_client, prompt_config, details["sender"], details["subject"], details["body"])
 
-        print(f"[{category}] {details['subject']}  —  {details['sender']}")
+        print(f"[{result['category']}] {details['subject']}  —  {details['sender']}")
+        print(f"    {result['summary']}\n")
 
         processed_ids.add(details["id"])
 
