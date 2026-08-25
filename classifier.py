@@ -48,7 +48,7 @@ def classify_email(client: OpenAI, prompt_config: dict, sender: str, subject: st
         messages=messages,
         temperature=0,
         max_tokens=500,
-        reasoning_effort="low",
+        reasoning_effort="none",
         response_format={"type": "json_object"},
     )
 
@@ -70,7 +70,7 @@ def judge_summary(client: OpenAI, sender: str, subject: str, body: str, summary:
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
         max_tokens=400,
-        reasoning_effort="low",
+        reasoning_effort="none",
         response_format={"type": "json_object"},
     )
 
