@@ -1,6 +1,7 @@
-groq
+openai
 pyyaml
 python-dotenv
 google-auth-oauthlib
 google-auth
 google-api-python-client
+cerebras_cloud_sdk

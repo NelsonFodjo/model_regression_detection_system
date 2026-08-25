@@ -5,10 +5,11 @@ no real reason to split it into its own module.
 """
 
 import json
+import os
 import yaml
-from groq import Groq
+from openai import OpenAI
 
-MODEL = "openai/gpt-oss-20b"
+MODEL = os.environ.get("MODEL", "openai/gpt-oss-20b")
 
 JUDGE_PROMPT = """You are grading an email summary for accuracy.
 
@@ -31,7 +32,7 @@ def load_prompt(path):
         return yaml.safe_load(f)
 
 
-def classify_email(client: Groq, prompt_config: dict, sender: str, subject: str, body: str) -> dict:
+def classify_email(client: OpenAI, prompt_config: dict, sender: str, subject: str, body: str) -> dict:
     """The feature under test. Classifies one email into category + summary."""
     messages = [
         {"role": "system", "content": prompt_config["system_prompt"]},
@@ -56,7 +57,7 @@ def classify_email(client: Groq, prompt_config: dict, sender: str, subject: str,
     return parsed
 
 
-def judge_summary(client: Groq, sender: str, subject: str, body: str, summary: str) -> dict:
+def judge_summary(client: OpenAI, sender: str, subject: str, body: str, summary: str) -> dict:
     """Separate LLM call that grades whether a generated summary is accurate."""
     prompt = JUDGE_PROMPT.format(sender=sender, subject=subject, body=body[:1500], summary=summary)
 

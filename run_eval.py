@@ -21,7 +21,7 @@ from pathlib import Path
 
 import yaml
 from dotenv import load_dotenv
-from groq import Groq
+from openai import OpenAI
 
 from classifier import load_prompt, classify_email, judge_summary
 
@@ -55,14 +55,15 @@ def _call_with_retry(func, *args, retries=2, **kwargs):
 def main():
     load_dotenv()
 
-    groq_api_key = os.environ.get("GROQ_API_KEY")
-    if not groq_api_key:
-        raise SystemExit("Set GROQ_API_KEY as an environment variable before running.")
+    api_key = os.environ.get("AI_API_KEY")
+    base_url = os.environ.get("AI_BASE_URL")
+    if not api_key or not base_url:
+        raise SystemExit("Set AI_API_KEY and AI_BASE_URL as environment variables before running.")
 
     prompt_version = sys.argv[1] if len(sys.argv) > 1 else "v1"
     prompt_path = f"prompts/{prompt_version}.yaml"
 
-    client = Groq(api_key=groq_api_key)
+    client = OpenAI(api_key=api_key, base_url=base_url)
     prompt_config = load_prompt(prompt_path)
 
     with open("golden_dataset.yaml") as f:

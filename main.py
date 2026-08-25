@@ -16,7 +16,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from groq import Groq
+from openai import OpenAI
 
 from classifier import load_prompt, classify_email
 
@@ -109,11 +109,12 @@ def get_message_details(service, msg_id):
 def main():
     load_dotenv()
 
-    groq_api_key = os.environ.get("GROQ_API_KEY")
-    if not groq_api_key:
-        raise SystemExit("Set GROQ_API_KEY as an environment variable before running.")
+    api_key = os.environ.get("AI_API_KEY")
+    base_url = os.environ.get("AI_BASE_URL")
+    if not api_key or not base_url:
+        raise SystemExit("Set AI_API_KEY and AI_BASE_URL as environment variables before running.")
 
-    groq_client = Groq(api_key=groq_api_key)
+    client = OpenAI(api_key=api_key, base_url=base_url)
     prompt_config = load_prompt(f"prompts/{PROMPT_VERSION}.yaml")
 
     service = get_gmail_service()
@@ -133,7 +134,7 @@ def main():
     details_list.sort(key=lambda d: d["timestamp"], reverse=True)
 
     for details in details_list:
-        result = classify_email(groq_client, prompt_config, details["sender"], details["subject"], details["body"])
+        result = classify_email(client, prompt_config, details["sender"], details["subject"], details["body"])
 
         print(f"[{result['category']}]")
         print(f"    {result['summary']}")
