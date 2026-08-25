@@ -28,12 +28,14 @@ from classifier import load_prompt, classify_email, judge_summary
 RESULTS_DIR = Path("eval_results")
 
 
-def facts_covered(summary: str, expected_facts: list[str]) -> tuple[int, int]:
+def facts_covered(summary: str, expected_facts: list[str]) -> tuple[list[str], list[str]]:
+    """Returns (hit_facts, missing_facts) instead of just counts."""
     if not expected_facts:
-        return 0, 0
+        return [], []
     summary_lower = summary.lower()
-    hits = sum(1 for fact in expected_facts if fact.lower() in summary_lower)
-    return hits, len(expected_facts)
+    hit = [fact for fact in expected_facts if fact.lower() in summary_lower]
+    missing = [fact for fact in expected_facts if fact.lower() not in summary_lower]
+    return hit, missing
 
 
 def _call_with_retry(func, *args, retries=2, **kwargs):
@@ -97,7 +99,9 @@ def main():
             if category_ok:
                 category_passed += 1
 
-            hits, expected_count = facts_covered(actual_summary, case.get("expected_facts", []))
+            hit_facts, missing_facts = facts_covered(actual_summary, case.get("expected_facts", []))
+            expected_count = len(case.get("expected_facts", []))
+            hits = len(hit_facts)
             total_facts_hit += hits
             total_facts_expected += expected_count
 
@@ -129,8 +133,8 @@ def main():
                 "category_pass": category_ok,
                 "judge_pass": judge_ok,
                 "judge_reason": judge_reason,
-                "facts_hit": hits,
-                "facts_expected": expected_count,
+                "facts_hit": hit_facts,
+                "facts_missing": missing_facts,
                 "facts_pass": facts_ok,
                 "actual_summary": actual_summary,
                 "latency_sec": latency,
@@ -139,11 +143,13 @@ def main():
             })
 
             status = "PASS" if overall_ok else "FAIL"
-            judge_flag = "" if judge_ok else " [judge:fail]"
+            judge_flag = "" if judge_ok else f" [judge:fail — {judge_reason}]"
             cat_flag = "" if category_ok else " [category:fail]"
-            facts_flag = f" facts={hits}/{expected_count}" if expected_count else ""
-            facts_fail_flag = "" if facts_ok else " [facts:fail]"
-            print(f"{status}  {case['id']:10s} expected={expected_category:12s} got={actual_category}{facts_flag}{cat_flag}{judge_flag}{facts_fail_flag}")
+            facts_flag = f" facts_hit={hit_facts} facts_missing={missing_facts}" if expected_count else ""
+            print(f"{status}  {case['id']:10s} expected={expected_category:12s} got={actual_category}{cat_flag}{judge_flag}")
+            if expected_count:
+                print(f"          {facts_flag.strip()}")
+            print(f"          summary: \"{actual_summary}\"")
 
         except Exception as e:
             print(f"ERROR {case['id']:10s} (after retries) {e}")
