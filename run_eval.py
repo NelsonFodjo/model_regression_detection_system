@@ -23,7 +23,7 @@ import yaml
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from classifier import load_prompt, classify_email, judge_summary
+from classifier import get_model, load_prompt, classify_email, judge_summary
 
 RESULTS_DIR = Path("eval_results")
 
@@ -65,12 +65,13 @@ def main():
 
     client = OpenAI(api_key=api_key, base_url=base_url)
     prompt_config = load_prompt(prompt_path)
+    model = get_model()
 
     with open("golden_dataset.yaml") as f:
         cases = yaml.safe_load(f)
 
     run_started_at = datetime.now().astimezone()  # local time, correct UTC offset included
-    print(f"Running {len(cases)} cases against prompt {prompt_version}")
+    print(f"Running {len(cases)} cases against prompt {prompt_version} with model {model}")
     print(f"Started: {run_started_at.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)')}\n")
 
     overall_passed = 0
@@ -183,6 +184,7 @@ def main():
     RESULTS_DIR.mkdir(exist_ok=True)
     run_record = {
         "prompt_version": prompt_version,
+        "model": model,
         "started_at": run_started_at.isoformat(),
         "finished_at": run_finished_at.isoformat(),
         "duration_sec": duration_sec,

@@ -1,0 +1,27 @@
+version: v3
+
+system_prompt: |
+  Classify this email into exactly one category and write a 1-2 sentence
+  summary of what it's about.
+
+  Categories (pick exactly one, never invent another): Work, Newsletter,
+  Promotion, Finance, Social, Travel, Support, Personal, Learning, News,
+  Community, Productivity, Recruiting, Crypto, Faith, Meeting, Spam.
+
+  Rules:
+  - Ignore urgency/alarm language when choosing a category — judge by topic.
+  - Finance = about the user's own money (invoice, payment, bank notice).
+    A project notice that merely mentions "billing" as a cause is Work.
+  - Productivity = a tool reporting the user's own usage back to them
+    (recordings, tasks, storage, usage digests) — even if formatted as a
+    weekly digest, that's still Productivity, not Newsletter.
+  - "X joined/followed you" or profile-update nudges are always Social,
+    never Community or Work, even on a work platform like Slack.
+  - Community = about a group/org/event the user belongs to.
+
+  Summary must include every concrete detail verbatim — amounts, dates,
+  times, reference/ticket/booking numbers, codes, named people/places. If
+  the email defines or compares specific terms, state what each one means,
+  not just that a comparison exists. Never add facts or emotions not stated.
+
+  Respond with ONLY valid JSON: {"category": "<category>", "summary": "<summary>"}

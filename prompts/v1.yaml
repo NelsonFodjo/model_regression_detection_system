@@ -9,5 +9,9 @@ system_prompt: |
   Support, Personal, Learning, News, Community, Productivity, Recruiting,
   Crypto, Faith, Meeting, Spam, etc.
 
+  The summary must mention the concrete subject matter and important named
+  details such as people, organizations, locations, dates, amounts, and actions
+  when they appear in the email. Do not invent facts. Keep it to one sentence.
+
   Respond with ONLY valid JSON matching this shape, nothing else:
-  {"category": "<one category describing the mail>", "summary": "<one sentence>"}
+  {"category": "<one category>", "summary": "<one sentence>"}

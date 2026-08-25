@@ -1,0 +1,199 @@
+prompt_version: v2
+model: mistral-small-latest
+started_at: '2026-08-25T13:57:39.271932+04:00'
+finished_at: '2026-08-25T13:58:01.461502+04:00'
+duration_sec: 22.2
+total_cases: 10
+summary:
+  overall_pass_rate: 90.0
+  overall_passed: 9
+  category_accuracy: 100.0
+  category_passed: 10
+  judge_accuracy: 90.0
+  judge_passed: 9
+  fact_coverage: 100.0
+  facts_hit: 19
+  facts_expected: 19
+  total_tokens: 11855
+  avg_tokens_per_case: 1186
+failed_case_ids:
+- case_10
+cases:
+- id: case_01
+  difficulty: easy
+  expected_category: Work
+  actual_category: Work
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically captures the email's content
+    without adding or omitting details.
+  facts_hit:
+  - deadline
+  - Friday
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from stephan@rtknits.mu states the Q3 report deadline
+    has been moved to Friday and requests the automation summary be ready by then.
+  latency_sec: 1.93
+  tokens_used: 1195
+  overall_pass: true
+- id: case_02
+  difficulty: easy
+  expected_category: Newsletter
+  actual_category: Newsletter
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically represents the email's content
+    without adding or omitting details.
+  facts_hit:
+  - AI
+  - roundup
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email is a weekly roundup of AI news covering new model releases,
+    funding rounds, and research papers worth reading.
+  latency_sec: 0.91
+  tokens_used: 1156
+  overall_pass: true
+- id: case_03
+  difficulty: medium
+  expected_category: Promotion
+  actual_category: Promotion
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically captures the email's key points
+    without adding or omitting details.
+  facts_hit:
+  - free access
+  - DataCamp
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email offers free access to all DataCamp courses for one week,
+    encouraging the recipient to continue their Python track.
+  latency_sec: 1.13
+  tokens_used: 1181
+  overall_pass: true
+- id: case_04
+  difficulty: easy
+  expected_category: Crypto
+  actual_category: Crypto
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically captures the email's content
+    without adding or omitting details.
+  facts_hit:
+  - Binance
+  - transactions
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from Binance states that transactions with certain crypto
+    platforms will no longer be processed starting next month due to regulatory developments.
+  latency_sec: 1.84
+  tokens_used: 1172
+  overall_pass: true
+- id: case_05
+  difficulty: edge
+  expected_category: Social
+  actual_category: Social
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically represents the email's content
+    without adding or omitting details.
+  facts_hit:
+  - jacinta
+  - joined
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email notifies that jacinta just joined the user's Slack workspace.
+  latency_sec: 1.03
+  tokens_used: 1159
+  overall_pass: true
+- id: case_06
+  difficulty: easy
+  expected_category: Travel
+  actual_category: Travel
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically represents all details from
+    the email without adding or omitting information.
+  facts_hit:
+  - flight
+  - Cape Town
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email confirms flight booking AB123CD to Cape Town, departing
+    at 14:20 and arriving at 17:45, with check-in opening 24 hours before departure.
+  latency_sec: 1.03
+  tokens_used: 1234
+  overall_pass: true
+- id: case_07
+  difficulty: easy
+  expected_category: Support
+  actual_category: Support
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically represents the email's content
+    without adding or omitting details.
+  facts_hit:
+  - password
+  - reset
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from support@somesaas.com confirms a password reset for
+    the user's account and instructs them to check their inbox for the reset link.
+  latency_sec: 0.92
+  tokens_used: 1203
+  overall_pass: true
+- id: case_08
+  difficulty: easy
+  expected_category: Personal
+  actual_category: Personal
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically captures the email's content
+    without adding or omitting details.
+  facts_hit:
+  - birthday
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from mom@gmail.com wishes the recipient a happy birthday
+    and asks them to call when possible.
+  latency_sec: 0.82
+  tokens_used: 1141
+  overall_pass: true
+- id: case_09
+  difficulty: medium
+  expected_category: Learning
+  actual_category: Learning
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically represents the email's content
+    about the difference between 'vivre' and 'habiter'.
+  facts_hit:
+  - vivre
+  - habiter
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email explains that 'vivre' means to be alive or to live one's
+    life, while 'habiter' means to reside in a specific place.
+  latency_sec: 1.23
+  tokens_used: 1214
+  overall_pass: true
+- id: case_10
+  difficulty: easy
+  expected_category: News
+  actual_category: News
+  category_pass: true
+  judge_pass: false
+  judge_reason: The summary incorrectly includes the health minister surgery detail,
+    which was not in the original email.
+  facts_hit:
+  - arrested
+  - Roche-Bois
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email reports that a father was arrested for killing his baby
+    son in Roche-Bois and that bushfires were reported in three districts overnight.
+  latency_sec: 1.02
+  tokens_used: 1200
+  overall_pass: false
