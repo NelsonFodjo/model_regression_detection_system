@@ -143,13 +143,10 @@ def main():
             })
 
             status = "PASS" if overall_ok else "FAIL"
-            judge_flag = "" if judge_ok else f" [judge:fail — {judge_reason}]"
-            cat_flag = "" if category_ok else " [category:fail]"
-            facts_flag = f" facts_hit={hit_facts} facts_missing={missing_facts}" if expected_count else ""
-            print(f"{status}  {case['id']:10s} expected={expected_category:12s} got={actual_category}{cat_flag}{judge_flag}")
-            if expected_count:
-                print(f"          {facts_flag.strip()}")
-            print(f"          summary: \"{actual_summary}\"")
+            judge_str = "yes" if judge_ok else "no"
+            category_str = f"{expected_category}/{actual_category}"
+            facts_str = f"{hits}/{expected_count}"
+            print(f"{status:4s}  {case['id']:10s} category: {category_str:28s} facts: {facts_str:6s} judge: {judge_str}")
 
         except Exception as e:
             print(f"ERROR {case['id']:10s} (after retries) {e}")

@@ -1,6 +1,7 @@
 """
 Mail Summary (production) — reads unread Gmail messages and classifies each
-one using classifier.py + prompts/v1.yaml
+one using classifier.py + prompts/v1.yaml — the exact same code run_eval.py
+tests against the golden dataset.
 
 Run: python main.py
 """
@@ -134,8 +135,9 @@ def main():
     for details in details_list:
         result = classify_email(groq_client, prompt_config, details["sender"], details["subject"], details["body"])
 
-        print(f"[{result['category']}] {details['subject']}  —  {details['sender']}")
-        print(f"    {result['summary']}\n")
+        print(f"[{result['category']}]")
+        print(f"    {result['summary']}")
+        print(f"    From: {details['sender']}\n")
 
         processed_ids.add(details["id"])
 
