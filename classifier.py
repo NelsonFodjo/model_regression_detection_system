@@ -9,7 +9,11 @@ import os
 import yaml
 from openai import OpenAI
 
-MODEL = os.environ.get("MODEL", "openai/gpt-oss-20b")
+DEFAULT_MODEL = "openai/gpt-oss-20b"
+
+
+def get_model() -> str:
+    return os.environ.get("MODEL", DEFAULT_MODEL)
 
 JUDGE_PROMPT = """You are grading an email summary for accuracy.
 
@@ -40,7 +44,7 @@ def classify_email(client: OpenAI, prompt_config: dict, sender: str, subject: st
     ]
 
     response = client.chat.completions.create(
-        model=MODEL,
+        model=get_model(),
         messages=messages,
         temperature=0,
         max_tokens=500,
@@ -62,7 +66,7 @@ def judge_summary(client: OpenAI, sender: str, subject: str, body: str, summary:
     prompt = JUDGE_PROMPT.format(sender=sender, subject=subject, body=body[:1500], summary=summary)
 
     response = client.chat.completions.create(
-        model=MODEL,
+        model=get_model(),
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
         max_tokens=400,
