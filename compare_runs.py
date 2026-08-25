@@ -66,7 +66,12 @@ def send_slack_alert(message: str):
         print("\n(No SLACK_WEBHOOK_URL set — skipping Slack alert.)")
         return
 
-    response = requests.post(webhook_url, json={"text": message})
+    try:
+        response = requests.post(webhook_url, json={"text": message}, timeout=10)
+    except requests.RequestException as error:
+        print(f"\nSlack alert failed: {error}")
+        return
+
     if response.status_code == 200:
         print("\nSlack alert sent.")
     else:
@@ -82,6 +87,7 @@ def main():
     metric_lines = []
     regression_detected = False
     critical_detected = False
+    improvement_detected = False
 
     for metric, label in [
         ("overall_pass_rate", "overall_pass_rate"),
@@ -102,6 +108,8 @@ def main():
             regression_detected = True
         elif "WARNING" in status:
             regression_detected = True
+        elif status == "improvement":
+            improvement_detected = True
 
     prev_tokens = previous["summary"].get("avg_tokens_per_case", 0)
     curr_tokens = current["summary"].get("avg_tokens_per_case", 0)
@@ -137,19 +145,35 @@ def main():
     if improvements:
         print(f"Improvements (fail -> pass): {', '.join(improvements)}")
 
-    if regression_detected:
-        severity = "CRITICAL" if critical_detected else "WARNING"
-        alert_lines = [
-            f"*[{severity}] Regression detected: {previous['prompt_version']} -> {current['prompt_version']}*",
-            "",
-            *[f"`{l}`" for l in metric_lines],
-        ]
-        if regressions:
-            alert_lines.append(f"\nCases that flipped pass -> fail: {', '.join(regressions)}")
+    if regressions:
+        regression_detected = True
+    if improvements:
+        improvement_detected = True
 
-        send_slack_alert("\n".join(alert_lines))
+    if regression_detected:
+        outcome = "CRITICAL REGRESSION" if critical_detected else "REGRESSION WARNING"
+    elif improvement_detected:
+        outcome = "IMPROVEMENT"
     else:
-        print("\nNo regression — Slack alert not sent.")
+        outcome = "NO REGRESSION"
+
+    alert_lines = [
+        f"*[{outcome}] Evaluation comparison: {previous['prompt_version']} -> {current['prompt_version']}*",
+        "",
+        f"Previous run: `{previous['prompt_version']}` | model: `{previous.get('model', 'unknown')}`",
+        f"Current run: `{current['prompt_version']}` | model: `{current.get('model', 'unknown')}`",
+        f"Previous started: `{previous['started_at']}`",
+        f"Current started: `{current['started_at']}`",
+        f"Cases: `{current.get('total_cases', len(current['cases']))}`",
+        "",
+        *[f"`{l}`" for l in metric_lines],
+    ]
+    if regressions:
+        alert_lines.append(f"\nCases that flipped pass -> fail: {', '.join(regressions)}")
+    if improvements:
+        alert_lines.append(f"Cases that flipped fail -> pass: {', '.join(improvements)}")
+
+    send_slack_alert("\n".join(alert_lines))
 
 
 if __name__ == "__main__":
