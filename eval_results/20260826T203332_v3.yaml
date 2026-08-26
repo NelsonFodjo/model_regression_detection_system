@@ -1,0 +1,202 @@
+prompt_version: v3
+model: mistral-small-latest
+started_at: '2026-08-26T20:33:32.407154+04:00'
+finished_at: '2026-08-26T20:33:54.306273+04:00'
+duration_sec: 21.9
+total_cases: 10
+summary:
+  overall_pass_rate: 90.0
+  overall_passed: 9
+  category_accuracy: 100.0
+  category_passed: 10
+  judge_accuracy: 100.0
+  judge_passed: 10
+  fact_coverage: 94.7
+  facts_hit: 18
+  facts_expected: 19
+  total_tokens: 6225
+  avg_tokens_per_case: 622
+failed_case_ids:
+- case_02
+cases:
+- id: case_01
+  difficulty: easy
+  expected_category: Work
+  actual_category: Work
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the key subject matter without inventing
+    or omitting material facts.
+  facts_hit:
+  - deadline
+  - Friday
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The Q3 report deadline has been moved to Friday, and the sender
+    asks if the automation summary can be ready by then.
+  latency_sec: 1.95
+  tokens_used: 612
+  overall_pass: true
+- id: case_02
+  difficulty: easy
+  expected_category: Newsletter
+  actual_category: Newsletter
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and specifically represents the email's content
+    without adding or omitting material facts.
+  facts_hit:
+  - AI
+  facts_missing:
+  - roundup
+  facts_pass: false
+  actual_summary: The email titled 'This week in AI' is a weekly newsletter summarizing
+    new AI model releases, funding rounds, and research papers worth reading.
+  latency_sec: 0.94
+  tokens_used: 598
+  overall_pass: false
+- id: case_03
+  difficulty: medium
+  expected_category: Promotion
+  actual_category: Promotion
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the key details of the email without
+    adding or omitting material facts.
+  facts_hit:
+  - free access
+  - DataCamp
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from team@datacamp.com announces a 'Free Access Week'
+    offering free access to every DataCamp course, encouraging the recipient to continue
+    their Python track and maintain their streak.
+  latency_sec: 1.46
+  tokens_used: 642
+  overall_pass: true
+- id: case_04
+  difficulty: easy
+  expected_category: Crypto
+  actual_category: Crypto
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the core subject and action of the
+    email without adding or omitting material facts.
+  facts_hit:
+  - Binance
+  - transactions
+  facts_missing: []
+  facts_pass: true
+  actual_summary: Binance compliance states that transactions with certain crypto
+    platforms will no longer be processed effective next month, following recent regulatory
+    developments.
+  latency_sec: 0.93
+  tokens_used: 604
+  overall_pass: true
+- id: case_05
+  difficulty: edge
+  expected_category: Social
+  actual_category: Social
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the core subject matter of the email.
+  facts_hit:
+  - jacinta
+  - joined
+  facts_missing: []
+  facts_pass: true
+  actual_summary: jacinta just joined the user's Slack workspace.
+  latency_sec: 0.69
+  tokens_used: 573
+  overall_pass: true
+- id: case_06
+  difficulty: easy
+  expected_category: Travel
+  actual_category: Travel
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the key details of the flight confirmation.
+  facts_hit:
+  - flight
+  - Cape Town
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email confirms a flight to Cape Town with booking reference
+    AB123CD, departing at 14:20 and arriving at 17:45.
+  latency_sec: 1.0
+  tokens_used: 643
+  overall_pass: true
+- id: case_07
+  difficulty: easy
+  expected_category: Support
+  actual_category: Support
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and sufficiently represents the email's content
+    without adding or omitting material facts.
+  facts_hit:
+  - password
+  - reset
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from support@somesaas.com states that the user's account
+    password has been reset and instructs them to check their inbox for a reset link,
+    asking to be notified if the issue persists.
+  latency_sec: 0.81
+  tokens_used: 655
+  overall_pass: true
+- id: case_08
+  difficulty: easy
+  expected_category: Personal
+  actual_category: Personal
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the core content of the email without
+    adding or omitting material facts.
+  facts_hit:
+  - birthday
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from mom@gmail.com wishes the recipient a happy birthday
+    and asks them to call when they get a chance.
+  latency_sec: 1.78
+  tokens_used: 579
+  overall_pass: true
+- id: case_09
+  difficulty: medium
+  expected_category: Learning
+  actual_category: Learning
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and sufficiently represents the email's subject
+    matter.
+  facts_hit:
+  - vivre
+  - habiter
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email explains the difference between the French verbs 'vivre'
+    (to be alive or live one's life) and 'habiter' (to reside somewhere).
+  latency_sec: 1.11
+  tokens_used: 636
+  overall_pass: true
+- id: case_10
+  difficulty: easy
+  expected_category: News
+  actual_category: News
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the two main news stories from the
+    email without adding or omitting material facts.
+  facts_hit:
+  - arrested
+  - Roche-Bois
+  facts_missing: []
+  facts_pass: true
+  actual_summary: 'The email reports two news stories: 1) A health minister underwent
+    surgery at a public hospital with his private doctor present, and 2) A father
+    was arrested for killing his baby son in Roche-Bois, and bushfires were reported
+    in three districts overnight.'
+  latency_sec: 1.22
+  tokens_used: 683
+  overall_pass: true

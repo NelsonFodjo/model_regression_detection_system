@@ -60,7 +60,7 @@ def save_processed_ids(ids):
         json.dump(list(ids), f)
 
 
-def get_unread_messages(service, max_results=10):
+def get_unread_messages(service, max_results=2):
     """Fetch the N most recent unread messages from the Primary tab."""
     results = (
         service.users()

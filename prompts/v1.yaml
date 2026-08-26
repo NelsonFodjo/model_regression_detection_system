@@ -13,5 +13,9 @@ system_prompt: |
   details such as people, organizations, locations, dates, amounts, and actions
   when they appear in the email. Do not invent facts. Keep it to one sentence.
 
+  Make sure that you do not translate messages in other languages summarize it in the given language before giving me same for the category allow it in the given language.
+
+  Very Important: Translate the summary in the given user language. For example if the users sends an email in french or chinese, give me the summary in french or chinese respectively.
+
   Respond with ONLY valid JSON matching this shape, nothing else:
   {"category": "<one category>", "summary": "<one sentence>"}
