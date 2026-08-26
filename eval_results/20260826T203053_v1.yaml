@@ -1,0 +1,202 @@
+prompt_version: v1
+model: mistral-small-latest
+started_at: '2026-08-26T20:30:53.276438+04:00'
+finished_at: '2026-08-26T20:31:11.796058+04:00'
+duration_sec: 18.5
+total_cases: 10
+summary:
+  overall_pass_rate: 70.0
+  overall_passed: 7
+  category_accuracy: 100.0
+  category_passed: 10
+  judge_accuracy: 80.0
+  judge_passed: 8
+  fact_coverage: 94.7
+  facts_hit: 18
+  facts_expected: 19
+  total_tokens: 4673
+  avg_tokens_per_case: 467
+failed_case_ids:
+- case_02
+- case_09
+- case_10
+cases:
+- id: case_01
+  difficulty: easy
+  expected_category: Work
+  actual_category: Work
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the key details of the email without
+    adding or omitting material facts.
+  facts_hit:
+  - deadline
+  - Friday
+  facts_missing: []
+  facts_pass: true
+  actual_summary: Stephan from RTK Nits informed Nelson that the Q3 report deadline
+    has been moved to Friday and requested the automation summary be ready by then.
+  latency_sec: 1.65
+  tokens_used: 479
+  overall_pass: true
+- id: case_02
+  difficulty: easy
+  expected_category: Newsletter
+  actual_category: Newsletter
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the email's subject matter without
+    inventing facts.
+  facts_hit:
+  - AI
+  facts_missing:
+  - roundup
+  facts_pass: false
+  actual_summary: The email is a weekly newsletter summarizing recent AI developments,
+    including new model releases, funding rounds, and notable research papers.
+  latency_sec: 0.81
+  tokens_used: 442
+  overall_pass: false
+- id: case_03
+  difficulty: medium
+  expected_category: Promotion
+  actual_category: Promotion
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the key details of the email without
+    adding or omitting material facts.
+  facts_hit:
+  - free access
+  - DataCamp
+  facts_missing: []
+  facts_pass: true
+  actual_summary: DataCamp is offering free access to all courses for one week, encouraging
+    the recipient to continue their Python learning track.
+  latency_sec: 0.72
+  tokens_used: 468
+  overall_pass: true
+- id: case_04
+  difficulty: easy
+  expected_category: Crypto
+  actual_category: Crypto
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the core subject and action of the
+    email without adding or omitting material facts.
+  facts_hit:
+  - Binance
+  - transactions
+  facts_missing: []
+  facts_pass: true
+  actual_summary: Binance announced that transactions with certain crypto platforms
+    will be suspended next month due to regulatory developments.
+  latency_sec: 0.88
+  tokens_used: 450
+  overall_pass: true
+- id: case_05
+  difficulty: edge
+  expected_category: Social
+  actual_category: Social
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the core subject matter of the email
+    without inventing or omitting material facts.
+  facts_hit:
+  - jacinta
+  - joined
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from Slack notifies the recipient that Jacinta has joined
+    their workspace and encourages them to connect with her.
+  latency_sec: 0.75
+  tokens_used: 463
+  overall_pass: true
+- id: case_06
+  difficulty: easy
+  expected_category: Travel
+  actual_category: Travel
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the key details of the email without
+    adding or omitting material facts.
+  facts_hit:
+  - flight
+  - Cape Town
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from airline.com confirms a flight to Cape Town with booking
+    reference AB123CD, departing at 14:20 and arriving at 17:45.
+  latency_sec: 1.01
+  tokens_used: 511
+  overall_pass: true
+- id: case_07
+  difficulty: easy
+  expected_category: Support
+  actual_category: Support
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately and sufficiently represents the email's concrete
+    subject matter.
+  facts_hit:
+  - password
+  - reset
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from support@somesaas.com informs the recipient that their
+    password has been reset and provides instructions to check the inbox for a reset
+    link.
+  latency_sec: 1.0
+  tokens_used: 484
+  overall_pass: true
+- id: case_08
+  difficulty: easy
+  expected_category: Personal
+  actual_category: Personal
+  category_pass: true
+  judge_pass: true
+  judge_reason: The summary accurately captures the core subject matter of the email.
+  facts_hit:
+  - birthday
+  facts_missing: []
+  facts_pass: true
+  actual_summary: A personal email from mom wishing happy birthday and asking to call
+    back.
+  latency_sec: 0.73
+  tokens_used: 411
+  overall_pass: true
+- id: case_09
+  difficulty: medium
+  expected_category: Learning
+  actual_category: Learning
+  category_pass: true
+  judge_pass: false
+  judge_reason: The summary incorrectly states that the email provides examples, which
+    is not mentioned in the original.
+  facts_hit:
+  - vivre
+  - habiter
+  facts_missing: []
+  facts_pass: true
+  actual_summary: The email from FrenchLearner.com explains the difference between
+    the French verbs 'vivre' and 'habiter' with examples.
+  latency_sec: 1.34
+  tokens_used: 483
+  overall_pass: false
+- id: case_10
+  difficulty: easy
+  expected_category: News
+  actual_category: News
+  category_pass: true
+  judge_pass: false
+  judge_reason: The summary incorrectly combines unrelated news stories from different
+    emails.
+  facts_hit:
+  - arrested
+  - Roche-Bois
+  facts_missing: []
+  facts_pass: true
+  actual_summary: 'The email reports on two news stories: a father arrested for killing
+    his baby son in Roche-Bois and bushfires reported in three districts overnight.'
+  latency_sec: 0.92
+  tokens_used: 482
+  overall_pass: false
