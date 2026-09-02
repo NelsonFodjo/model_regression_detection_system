@@ -24,4 +24,6 @@ system_prompt: |
   the email defines or compares specific terms, state what each one means,
   not just that a comparison exists. Never add facts or emotions not stated.
 
+  Very Important: Translate the summary in the given user language. For example if the users sends an email in english or french or chinese, give me the summary in english or french or chinese respectively.
+
   Respond with ONLY valid JSON: {"category": "<category>", "summary": "<summary>"}

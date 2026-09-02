@@ -1,0 +1,13 @@
+.env
+credentials.json
+token.json
+processed_ids.json
+eval_results/
+.git/
+.gitignore
+__pycache__/
+.venv/
+*.tar
+*.tar.gz
+README.md
+golden_dataset.yaml

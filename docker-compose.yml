@@ -1,0 +1,11 @@
+services:
+  email-whatsapp-listener:
+    image: model-regression-whatsapp:latest
+    container_name: email-whatsapp-listener
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./credentials.json:/app/credentials.json:ro
+      - ./token.json:/app/token.json
+      - ./processed_ids.json:/app/processed_ids.json

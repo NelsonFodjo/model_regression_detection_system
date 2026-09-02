@@ -9,6 +9,8 @@ Run: python main.py
 import os
 import json
 import base64
+import sys
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -19,13 +21,15 @@ from googleapiclient.discovery import build
 from openai import OpenAI
 
 from classifier import load_prompt, classify_email
+from whatsapp import format_summary, send_whatsapp_message
 
 # --- Config ---
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 CREDENTIALS_FILE = "credentials.json"
 TOKEN_FILE = "token.json"
 PROCESSED_FILE = "processed_ids.json"
-PROMPT_VERSION = "v1"  # bump this after you validate a new version passes run_eval.py
+PROMPT_VERSION = "v3"  # bump this after you validate a new version passes run_eval.py
+DEFAULT_POLL_INTERVAL = 30
 
 
 def get_gmail_service():
@@ -106,6 +110,31 @@ def get_message_details(service, msg_id):
     return {"id": msg_id, "subject": subject, "sender": sender, "body": body, "timestamp": timestamp}
 
 
+def process_once(service, client, prompt_config, processed_ids, resend=False):
+    """Process currently unread messages and return the updated ID set."""
+    messages = get_unread_messages(service, max_results=int(os.environ.get("MAX_EMAILS_PER_POLL", "10")))
+    new_messages = messages if resend else [m for m in messages if m["id"] not in processed_ids]
+
+    if not new_messages:
+        return processed_ids
+
+    details_list = [get_message_details(service, m["id"]) for m in new_messages]
+    details_list.sort(key=lambda d: d["timestamp"], reverse=True)
+
+    for details in details_list:
+        try:
+            result = classify_email(client, prompt_config, details["sender"], details["subject"], details["body"])
+
+            send_whatsapp_message(format_summary(details, result))
+
+            processed_ids.add(details["id"])
+            save_processed_ids(processed_ids)
+        except Exception as error:
+            print(f"Message {details['id']} failed and will retry: {error}", flush=True)
+
+    return processed_ids
+
+
 def main():
     load_dotenv()
 
@@ -113,6 +142,10 @@ def main():
     base_url = os.environ.get("AI_BASE_URL")
     if not api_key or not base_url:
         raise SystemExit("Set AI_API_KEY and AI_BASE_URL as environment variables before running.")
+    whatsapp_settings = ("WHATSAPP_PHONE_NUMBER_ID", "WHATSAPP_ACCESS_TOKEN", "WHATSAPP_TO")
+    missing_whatsapp = [name for name in whatsapp_settings if not os.environ.get(name)]
+    if missing_whatsapp:
+        raise SystemExit(f"Set WhatsApp configuration in .env: {', '.join(missing_whatsapp)}")
 
     client = OpenAI(api_key=api_key, base_url=base_url)
     prompt_config = load_prompt(f"prompts/{PROMPT_VERSION}.yaml")
@@ -120,29 +153,17 @@ def main():
     service = get_gmail_service()
 
     processed_ids = load_processed_ids()
-    messages = get_unread_messages(service)
+    resend = "--resend" in sys.argv[1:]
+    poll_interval = int(os.environ.get("POLL_INTERVAL_SECONDS", str(DEFAULT_POLL_INTERVAL)))
 
-    new_messages = [m for m in messages if m["id"] not in processed_ids]
-
-    if not new_messages:
-        print("No new unread mail.")
+    if resend:
+        process_once(service, client, prompt_config, processed_ids, resend=True)
         return
 
-    print(f"Found {len(new_messages)} new unread message(s).\n")
-
-    details_list = [get_message_details(service, m["id"]) for m in new_messages]
-    details_list.sort(key=lambda d: d["timestamp"], reverse=True)
-
-    for details in details_list:
-        result = classify_email(client, prompt_config, details["sender"], details["subject"], details["body"])
-
-        print(f"[{result['category']}]")
-        print(f"    {result['summary']}")
-        print(f"    From: {details['sender']}\n")
-
-        processed_ids.add(details["id"])
-
-    save_processed_ids(processed_ids)
+    print(f"WhatsApp email listener started; polling every {poll_interval} seconds.", flush=True)
+    while True:
+        process_once(service, client, prompt_config, processed_ids)
+        time.sleep(poll_interval)
 
 
 if __name__ == "__main__":

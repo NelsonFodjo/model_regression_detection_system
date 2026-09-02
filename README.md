@@ -69,6 +69,16 @@ MODEL=your-model-name
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
 ```
 
+For WhatsApp delivery from `main.py`, configure the WhatsApp Cloud API and add these values to `.env`:
+
+```dotenv
+WHATSAPP_PHONE_NUMBER_ID=your-meta-phone-number-id
+WHATSAPP_ACCESS_TOKEN=your-meta-access-token
+WHATSAPP_TO=15551234567
+```
+
+`WHATSAPP_TO` must be the recipient's phone number in international format, without `+`, spaces, or punctuation. The recipient must have an active conversation with the business number, or the Cloud API must use an approved message template when initiating a conversation outside the 24-hour customer-service window.
+
 ### Gmail OAuth setup
 
 To use `main.py`:
@@ -158,18 +168,53 @@ Once Gmail OAuth and the AI settings are configured:
 python main.py
 ```
 
+To resend currently unread messages that are already in `processed_ids.json`,
+use:
+
+```bash
+python main.py --resend
+```
+
 The workflow:
 
-1. Loads the selected prompt version, currently `v1` in `main.py`.
+1. Loads the selected prompt version, currently `v3` in `main.py`.
 2. Finds up to two messages matching `is:unread category:primary`.
 3. Skips message IDs already present in `processed_ids.json`.
 4. Extracts the plain-text body, subject, sender, and timestamp.
-5. Classifies messages and prints each category, summary, and sender.
-6. Records successfully processed message IDs in `processed_ids.json`.
+5. Classifies messages and sends each category and summary to WhatsApp, including the sender and subject.
+6. Records a message ID only after its WhatsApp delivery succeeds.
 
 The Gmail message body sent to the classifier is limited to the first 3,000 characters. If there are no new matching messages, the command prints `No new unread mail.`
 
 To promote a validated prompt, update `PROMPT_VERSION` in `main.py`, then run the evaluation for that version before running the production workflow.
+
+## Docker Deployment
+
+Build and export the image locally:
+
+```bash
+docker build -t model-regression-whatsapp:latest .
+docker save model-regression-whatsapp:latest | gzip > model-regression-whatsapp.tar.gz
+```
+
+Copy these files to the server:
+
+- `model-regression-whatsapp.tar.gz`
+- `docker-compose.yml`
+- `.env`
+- `credentials.json`
+- `token.json`
+- `processed_ids.json` (create it with `echo '[]' > processed_ids.json` if missing)
+
+On the server, load and start the listener:
+
+```bash
+gunzip -c model-regression-whatsapp.tar.gz | docker load
+docker-compose up -d
+docker-compose logs -f email-whatsapp-listener
+```
+
+The container polls Gmail every 30 seconds by default and sends each newly seen unread Primary email directly to WhatsApp. Set `POLL_INTERVAL_SECONDS` in `.env` to change the interval. Stop it with `docker-compose down`; it restarts automatically after a server reboot.
 
 ## Prompt and Dataset Format
 
